@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace SalesWebMvc.Controllers
 {
     public class SellersController : Controller
     {
+
         private readonly SellerService _sellersService;
         private readonly DepartmentService _departmentService;
 
@@ -53,12 +55,12 @@ namespace SalesWebMvc.Controllers
                 }
                 else
                 {
-                    return NotFound();
+                    return RedirectToAction(nameof(Error), new { message = "Id not provided!" });
                 }
             }
             else
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found!" }); 
             }
         }
         [HttpPost]
@@ -80,12 +82,12 @@ namespace SalesWebMvc.Controllers
                 }
                 else
                 {
-                    return NotFound();
+                    return RedirectToAction(nameof(Error), new { message = "Id not provided!" });
                 }
             }
             else
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found!" }); 
             }
         }
         public IActionResult Edit(int? id)
@@ -101,12 +103,12 @@ namespace SalesWebMvc.Controllers
                 }
                 else
                 {
-                    return NotFound();
+                    return RedirectToAction(nameof(Error), new { message = "Id not provided!" }); 
                 }
             }
             else
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found!" }); 
             }
         }
 
@@ -121,21 +123,28 @@ namespace SalesWebMvc.Controllers
                     _sellersService.Update(seller);
                     return RedirectToAction(nameof(Index));
                 }
-                catch (NotFoundException)
+                catch (ApplicationException e)
                 {
 
-                    return NotFound();
+                    return RedirectToAction(nameof(Error), new { message = e.Message });
                 }
-                catch (DbConcurrencyException)
-                {
-                    return BadRequest();
-                }
-               
+             
             }
             else
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = "Id miss match!" });
             }
+        }
+
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            };
+
+            return View(viewModel);
         }
     }
 }
