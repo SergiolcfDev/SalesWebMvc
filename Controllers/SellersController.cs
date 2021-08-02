@@ -62,10 +62,30 @@ namespace SalesWebMvc.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int ID)
+        public IActionResult Delete(int id)
         {
-            _sellersService.Remove(ID);
+            _sellersService.Remove(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Details(int? id)
+        {
+            if (id != null)
+            {
+                var seller = _sellersService.FindById(id.Value);
+                if (seller != null)
+                {
+                    return View(seller);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }
