@@ -40,6 +40,12 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Seller seller)
         {
+            if (!ModelState.IsValid)
+            {
+                var departments = _departmentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departaments = departments };
+                return View(viewModel);
+            }
             _sellersService.Insert(seller);
             return RedirectToAction(nameof(Index));
         }
@@ -120,6 +126,12 @@ namespace SalesWebMvc.Controllers
             {
                 try
                 {
+                    if (!ModelState.IsValid)
+                    {
+                        var departments = _departmentService.FindAll();
+                        var viewModel = new SellerFormViewModel { Seller = seller, Departaments = departments };
+                        return View(viewModel);
+                    }
                     _sellersService.Update(seller);
                     return RedirectToAction(nameof(Index));
                 }
